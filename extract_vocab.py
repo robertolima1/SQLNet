@@ -21,7 +21,7 @@ sql_data, table_data, val_sql_data, val_table_data,\
         load_dataset(0, use_small=USE_SMALL)
 word_emb = load_word_emb('glove/glove.%dB.%dd.txt'%(B_word,N_word),
         use_small=USE_SMALL)
-print "Length of word vocabulary: %d"%len(word_emb)
+print("Length of word vocabulary: %d"%len(word_emb))
 
 word_to_idx = {'<UNK>':0, '<BEG>':1, '<END>':2}
 word_num = 3
@@ -38,26 +38,26 @@ def check_and_add(tok):
 for sql in sql_data:
     for tok in sql['question_tok']:
         check_and_add(tok)
-for tab in table_data.values():
+for tab in list(table_data.values()):
     for col in tab['header_tok']:
         for tok in col:
             check_and_add(tok)
 for sql in val_sql_data:
     for tok in sql['question_tok']:
         check_and_add(tok)
-for tab in val_table_data.values():
+for tab in list(val_table_data.values()):
     for col in tab['header_tok']:
         for tok in col:
             check_and_add(tok)
 for sql in test_sql_data:
     for tok in sql['question_tok']:
         check_and_add(tok)
-for tab in test_table_data.values():
+for tab in list(test_table_data.values()):
     for col in tab['header_tok']:
         for tok in col:
             check_and_add(tok)
 
-print "Length of used word vocab: %s"%len(word_to_idx)
+print("Length of used word vocab: %s"%len(word_to_idx))
 
 emb_array = np.stack(embs, axis=0)
 with open('glove/word2idx.json', 'w') as outf:
