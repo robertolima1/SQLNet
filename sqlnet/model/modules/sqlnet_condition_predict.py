@@ -32,10 +32,10 @@ class SQLNetCondPredictor(nn.Module):
                 num_layers=N_depth, batch_first=True,
                 dropout=0.3, bidirectional=True)
         if use_ca:
-            print "Using column attention on where predicting"
+            print("Using column attention on where predicting")
             self.cond_col_att = nn.Linear(N_h, N_h)
         else:
-            print "Not using column attention on where predicting"
+            print("Not using column attention on where predicting")
             self.cond_col_att = nn.Linear(N_h, 1)
         self.cond_col_name_enc = nn.LSTM(input_size=N_word, hidden_size=N_h/2,
                 num_layers=N_depth, batch_first=True,

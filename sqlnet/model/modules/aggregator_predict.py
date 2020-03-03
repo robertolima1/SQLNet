@@ -17,13 +17,13 @@ class AggPredictor(nn.Module):
                 num_layers=N_depth, batch_first=True,
                 dropout=0.3, bidirectional=True)
         if use_ca:
-            print "Using column attention on aggregator predicting"
+            print("Using column attention on aggregator predicting")
             self.agg_col_name_enc = nn.LSTM(input_size=N_word,
                     hidden_size=N_h/2, num_layers=N_depth,
                     batch_first=True, dropout=0.3, bidirectional=True)
             self.agg_att = nn.Linear(N_h, N_h)
         else:
-            print "Not using column attention on aggregator predicting"
+            print("Not using column attention on aggregator predicting")
             self.agg_att = nn.Linear(N_h, 1)
         self.agg_out = nn.Sequential(nn.Linear(N_h, N_h),
                 nn.Tanh(), nn.Linear(N_h, 6))
@@ -39,7 +39,7 @@ class AggPredictor(nn.Module):
             e_col, _ = col_name_encode(col_inp_var, col_name_len, 
                     col_len, self.agg_col_name_enc)
             chosen_sel_idx = torch.LongTensor(gt_sel)
-            aux_range = torch.LongTensor(range(len(gt_sel)))
+            aux_range = torch.LongTensor(list(range(len(gt_sel))))
             if x_emb_var.is_cuda:
                 chosen_sel_idx = chosen_sel_idx.cuda()
                 aux_range = aux_range.cuda()

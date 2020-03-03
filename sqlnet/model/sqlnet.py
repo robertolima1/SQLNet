@@ -63,8 +63,8 @@ class SQLNet(nn.Module):
         ret_seq = []
         for cur_q, cur_col, cur_query in zip(q, col, query):
             cur_values = []
-            st = cur_query.index(u'WHERE')+1 if \
-                    u'WHERE' in cur_query else len(cur_query)
+            st = cur_query.index('WHERE')+1 if \
+                    'WHERE' in cur_query else len(cur_query)
             all_toks = ['<BEG>'] + cur_q + ['<END>']
             while st < len(cur_query):
                 ed = len(cur_query) if 'AND' not in cur_query[st:]\
@@ -147,7 +147,7 @@ class SQLNet(nn.Module):
 
         loss = 0
         if pred_agg:
-            agg_truth = map(lambda x:x[0], truth_num)
+            agg_truth = [x[0] for x in truth_num]
             data = torch.from_numpy(np.array(agg_truth))
             if self.gpu:
                 agg_truth_var = Variable(data.cuda())
@@ -157,7 +157,7 @@ class SQLNet(nn.Module):
             loss += self.CE(agg_score, agg_truth_var)
 
         if pred_sel:
-            sel_truth = map(lambda x:x[1], truth_num)
+            sel_truth = [x[1] for x in truth_num]
             data = torch.from_numpy(np.array(sel_truth))
             if self.gpu:
                 sel_truth_var = Variable(data.cuda())
@@ -171,7 +171,7 @@ class SQLNet(nn.Module):
             cond_num_score, cond_col_score,\
                     cond_op_score, cond_str_score = cond_score
             #Evaluate the number of conditions
-            cond_num_truth = map(lambda x:x[2], truth_num)
+            cond_num_truth = [x[2] for x in truth_num]
             data = torch.from_numpy(np.array(cond_num_truth))
             if self.gpu:
                 cond_num_truth_var = Variable(data.cuda())
@@ -231,9 +231,9 @@ class SQLNet(nn.Module):
 
     def check_acc(self, vis_info, pred_queries, gt_queries, pred_entry):
         def pretty_print(vis_data):
-            print 'question:', vis_data[0]
-            print 'headers: (%s)'%(' || '.join(vis_data[1]))
-            print 'query:', vis_data[2]
+            print('question:', vis_data[0])
+            print('headers: (%s)'%(' || '.join(vis_data[1])))
+            print('query:', vis_data[2])
 
         def gen_cond_str(conds, header):
             if len(conds) == 0:
@@ -241,7 +241,7 @@ class SQLNet(nn.Module):
             cond_str = []
             for cond in conds:
                 cond_str.append(header[cond[0]] + ' ' +
-                    self.COND_OPS[cond[1]] + ' ' + unicode(cond[2]).lower())
+                    self.COND_OPS[cond[1]] + ' ' + str(cond[2]).lower())
             return 'WHERE ' + ' AND '.join(cond_str)
 
         pred_agg, pred_sel, pred_cond = pred_entry
@@ -294,8 +294,8 @@ class SQLNet(nn.Module):
                         break
                     gt_idx = tuple(
                             x[0] for x in cond_gt).index(cond_pred[idx][0])
-                    if flag and unicode(cond_gt[gt_idx][2]).lower() != \
-                            unicode(cond_pred[idx][2]).lower():
+                    if flag and str(cond_gt[gt_idx][2]).lower() != \
+                            str(cond_pred[idx][2]).lower():
                         flag = False
                         cond_val_err += 1
 
@@ -320,7 +320,7 @@ class SQLNet(nn.Module):
                     '-RSB-':']',
                     '``':'"',
                     '\'\'':'"',
-                    '--':u'\u2013'}
+                    '--':'\u2013'}
             ret = ''
             double_quote_appear = 0
             for raw_tok in tok_list:
@@ -341,7 +341,7 @@ class SQLNet(nn.Module):
                         ret = ret + ' '
                 elif tok[0] not in alphabet:
                     pass
-                elif (ret[-1] not in ['(', '/', u'\u2013', '#', '$', '&']) \
+                elif (ret[-1] not in ['(', '/', '\u2013', '#', '$', '&']) \
                         and (ret[-1] != '"' or not double_quote_appear):
                     ret = ret + ' '
                 ret = ret + tok
